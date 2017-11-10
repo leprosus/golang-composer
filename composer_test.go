@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 	"sync"
+	"fmt"
 )
 
 var wg sync.WaitGroup
@@ -46,5 +47,35 @@ func TestComposer(t *testing.T) {
 
 	if d[0] != 1 || d[1] != 1 || d[2] != 1 {
 		t.Fatal("Can't play goroutines by composer")
+	}
+}
+
+func TestExample(t *testing.T) {
+	for i := 1; i <= 3; i++ {
+		go loop(i)
+	}
+
+	fmt.Println("All of goroutins are started")
+
+	time.Sleep(5 * time.Second)
+	GetComposer().Pause()
+
+	fmt.Println("All of goroutins are paused")
+
+	time.Sleep(5 * time.Second)
+	GetComposer().Play()
+
+	fmt.Println("All of goroutins are resumed")
+
+	time.Sleep(5 * time.Second)
+}
+
+func loop(id int) {
+	for {
+		fmt.Printf("Goroutin #%d\n", id)
+
+		time.Sleep(time.Second)
+
+		GetComposer().NeedWait()
 	}
 }

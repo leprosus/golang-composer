@@ -6,8 +6,7 @@ import (
 )
 
 type composer struct {
-	sync.WaitGroup
-
+	wg sync.WaitGroup
 	flag uint64
 }
 
@@ -26,13 +25,13 @@ func GetComposer() *composer {
 
 // Checks rather to wait or does not need
 func (c *composer) NeedWait() {
-	c.Wait()
+	c.wg.Wait()
 }
 
 // Says all of goroutins to resume execution
 func (c *composer) Play() {
 	if atomic.LoadUint64(&c.flag) == 1 {
-		c.Done()
+		c.wg.Done()
 		atomic.StoreUint64(&c.flag, 0)
 	}
 }
@@ -41,6 +40,6 @@ func (c *composer) Play() {
 func (c *composer) Pause() {
 	if atomic.LoadUint64(&c.flag) == 0 {
 		atomic.StoreUint64(&c.flag, 1)
-		c.Add(1)
+		c.wg.Add(1)
 	}
 }
