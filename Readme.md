@@ -46,6 +46,6 @@ func loop(id int){
 ## List all methods
 
 * composer.GetComposer - returns composer
-* GetComposer.Play - lets to execute goroutins
-* GetComposer.Pause - lets to pause goroutins execution
-* GetComposer.NeedWait - if need to pause then wait resuming rather do nothing 
+* composer.GetComposer.Play - lets to execute goroutins
+* composer.GetComposer.Pause - lets to pause goroutins execution
+* composer.GetComposer.NeedWait - if need to pause then wait resuming rather do nothing 
