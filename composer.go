@@ -6,8 +6,8 @@ import (
 )
 
 type composer struct {
-	wg sync.WaitGroup
 	flag uint64
+	chn  chan bool
 }
 
 var (
@@ -17,7 +17,10 @@ var (
 
 func GetComposer() *composer {
 	once.Do(func() {
-		instance = &composer{}
+		chn := make(chan bool)
+		close(chn)
+
+		instance = &composer{chn: chn}
 	})
 
 	return instance
@@ -25,13 +28,13 @@ func GetComposer() *composer {
 
 // Checks rather to wait or does not need
 func (c *composer) NeedWait() {
-	c.wg.Wait()
+	<-c.chn
 }
 
 // Says all of goroutins to resume execution
 func (c *composer) Play() {
 	if atomic.LoadUint64(&c.flag) == 1 {
-		c.wg.Done()
+		close(c.chn)
 		atomic.StoreUint64(&c.flag, 0)
 	}
 }
@@ -40,6 +43,6 @@ func (c *composer) Play() {
 func (c *composer) Pause() {
 	if atomic.LoadUint64(&c.flag) == 0 {
 		atomic.StoreUint64(&c.flag, 1)
-		c.wg.Add(1)
+		c.chn = make(chan bool)
 	}
 }
